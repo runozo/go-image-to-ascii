@@ -24,10 +24,6 @@ The source image will be stretched to fit the actual size in characters of the t
 
 ```./go-image-to-ascii image.webp```
 
-## Help
-
-```./go-image-to-ascii -h```
-
 ## Todo
 
 [] fetch image from webcam
