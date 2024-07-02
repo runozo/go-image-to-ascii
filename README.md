@@ -1,4 +1,4 @@
-# go-image-to-ascii
+# Go-image-to-ascii
 
 Convert a bitmap image into ASCII.
 
@@ -8,7 +8,7 @@ Convert a bitmap image into ASCII.
 
 ## Usage
 
-The source image will be streched to fit the actual size in characters of the terminal. 
+The source image will be stretched to fit the actual size in characters of the terminal. 
 
 ```./go-image-to-ascii -image image.webp```
 
