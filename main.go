@@ -26,7 +26,7 @@ import (
 )
 
 // const density = "Ñ@#W$9876543210?!abc;:+=-,._          "
-const density = "            _.,-=+:;cba!?0123456789$W#@Ñ"
+const density = "         _.,-=+:;cba!?0123456789$W#@Ñ"
 const coldef = termbox.ColorDefault
 
 type Pixel struct {
@@ -107,6 +107,7 @@ func main() {
 			pixels := getPixels(frame, termWidth, termHeight)
 			asciiPixels := pixelsToAscii(termWidth, termHeight, pixels, density)
 			fmt.Println(asciiPixels)
+			termbox.Clear(coldef, coldef)
 			/*
 				for y := 0; y < termHeight; y++ {
 					for x := 0; x < termWidth; x++ {
