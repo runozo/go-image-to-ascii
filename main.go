@@ -10,9 +10,9 @@ import (
 	"io"
 	"os"
 
+	"github.com/nsf/termbox-go"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/webp"
-	"golang.org/x/term"
 )
 
 // const density = "Ñ@#W$9876543210?!abc;:+=-,._          "
@@ -42,15 +42,12 @@ func main() {
 
 	filename := os.Args[1]
 
-	if term.IsTerminal(0) {
-		fmt.Println("in a term")
-	} else {
-		fmt.Println("not in a term")
+	if err := termbox.Init(); err != nil {
+		panic(err)
 	}
-	termWidth, termHeight, err := term.GetSize(0)
-	if err != nil {
-		return
-	}
+
+	termWidth, termHeight := termbox.Size()
+	termbox.Close()
 	fmt.Println("width:", termWidth, "height:", termHeight)
 
 	file, err := os.Open(filename)
