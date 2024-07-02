@@ -4,7 +4,7 @@ Convert a bitmap image into ASCII.
 
 ## Build
 
-```go build -o go-image-to-ascii main.go``
+```go build -o go-image-to-ascii main.go```
 
 ## Build for other platforms
 
@@ -23,6 +23,11 @@ The source image will be stretched to fit the actual size in characters of the t
 ## Help
 
 ```./go-image-to-ascii -h```
+
+## Todo
+
+[] fetch image from webcam
+[] live video rendering on terminal
 
 
 
