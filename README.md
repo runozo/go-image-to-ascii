@@ -2,6 +2,10 @@
 
 Convert a bitmap image into ASCII.
 
+![source image](examples/image.webp)
+
+![resulting image](examples/image_ascii.png)
+
 ## Build
 
 ```go build -o go-image-to-ascii main.go```
