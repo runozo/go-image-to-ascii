@@ -6,6 +6,14 @@ Convert a bitmap image into ASCII.
 
 ```go build -o go-image-to-ascii main.go``
 
+## Build for other platforms
+
+```make windows```
+
+```make linux```
+
+```make darwin```
+
 ## Usage
 
 The source image will be stretched to fit the actual size in characters of the terminal. 
