@@ -102,14 +102,15 @@ func main() {
 		// can be reused for the next frames.
 		videoReader := videoTrack.NewReader(false)
 		termbox.Clear(coldef, coldef)
+		// mainloop:
 		for {
 			frame, release, err := videoReader.Read()
 			if err != nil {
 				fmt.Println("Error: Video could not be read")
 				os.Exit(1)
 			}
+			termWidth, termHeight = termbox.Size()
 			pixels := getPixels(frame, termWidth, termHeight)
-			// termWidth, termHeight = termbox.Size()
 			asciiPixels := pixelsToAscii(termWidth, termHeight, pixels, density)
 			fmt.Println(asciiPixels)
 			termbox.Clear(coldef, coldef)
@@ -123,6 +124,17 @@ func main() {
 				termbox.Flush()
 			*/
 			release()
+			/*
+				go func() {
+					switch ev := termbox.PollEvent(); ev.Type {
+					case termbox.EventKey:
+						switch ev.Key {
+						case termbox.KeyEsc:
+							os.Exit(0)
+						}
+					}
+				}()
+			*/
 		}
 
 		// Since frame is the standard image.Image, it's compatible with Go standard
