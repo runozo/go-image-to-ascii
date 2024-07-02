@@ -124,6 +124,26 @@ func main() {
 				termbox.Flush()
 			*/
 			release()
+			// poll for keyboard events in another goroutine
+			events := make(chan termbox.Event, 10)
+			go func() {
+				for {
+					events <- termbox.PollEvent()
+				}
+			}()
+			select {
+			case ev := <-events:
+				if ev.Type == termbox.EventKey {
+					if ev.Key == termbox.KeyEsc {
+						fmt.Println("bye")
+						os.Exit(0)
+					}
+				}
+
+			default:
+
+			}
+
 			/*
 				go func() {
 					switch ev := termbox.PollEvent(); ev.Type {
