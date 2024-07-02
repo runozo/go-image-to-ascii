@@ -4,7 +4,7 @@ Convert a bitmap image into ASCII.
 
 ## Build
 
-```go build main.go -o go-image-to-ascii``
+```go build -o go-image-to-ascii main.go``
 
 ## Usage
 
