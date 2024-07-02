@@ -25,7 +25,7 @@ type Pixel struct {
 	A int
 }
 
-var filename = flag.String("image", "image.webp", "filename of image to convert to ascii (png, jpeg, webp)")
+// var filename = flag.String("image", "image.webp", "filename of image to convert to ascii (png, jpeg, webp)")
 
 func main() {
 	// You can register other formats here
@@ -35,9 +35,12 @@ func main() {
 
 	flag.Parse()
 
-	if *filename == "" {
-		*filename = "image.webp"
+	if len(os.Args) != 2 {
+		fmt.Println("Usage:", os.Args[0], "filename")
+		os.Exit(1)
 	}
+
+	filename := os.Args[1]
 
 	if term.IsTerminal(0) {
 		fmt.Println("in a term")
@@ -50,7 +53,7 @@ func main() {
 	}
 	fmt.Println("width:", termWidth, "height:", termHeight)
 
-	file, err := os.Open(*filename)
+	file, err := os.Open(filename)
 
 	if err != nil {
 		fmt.Println("Error: File could not be opened")

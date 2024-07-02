@@ -18,7 +18,7 @@ Convert a bitmap image into ASCII.
 
 The source image will be stretched to fit the actual size in characters of the terminal. 
 
-```./go-image-to-ascii -image image.webp```
+```./go-image-to-ascii image.webp```
 
 ## Help
 
