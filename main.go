@@ -53,11 +53,13 @@ func main() {
 	}
 
 	if err := termbox.Init(); err != nil {
-		panic(err)
+		fmt.Println("Error: termbox failed to initialize")
+		os.Exit(1)
 	}
 
 	termWidth, termHeight := termbox.Size()
-	defer termbox.Close()
+	// termWidth, termHeight := 100, 50
+	// defer termbox.Close()
 	fmt.Println("width:", termWidth, "height:", termHeight)
 
 	if *filename != "" {
@@ -77,9 +79,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		pixels := getPixels(srcImage, termWidth, termHeight)
+		flushImageToScreen(srcImage, termWidth, termHeight, density)
 
-		fmt.Println(pixelsToAscii(termWidth, termHeight, pixels, density))
 	}
 
 	if *webcam {
@@ -110,20 +111,12 @@ func main() {
 				os.Exit(1)
 			}
 			termWidth, termHeight = termbox.Size()
-			pixels := getPixels(frame, termWidth, termHeight)
-			asciiPixels := pixelsToAscii(termWidth, termHeight, pixels, density)
-			fmt.Println(asciiPixels)
-			termbox.Clear(coldef, coldef)
-			/*
-				for y := 0; y < termHeight; y++ {
-					for x := 0; x < termWidth; x++ {
-						index := y*termWidth + x
-						termbox.SetChar(x, y, rune(asciiPixels[index]))
-					}
-				}
-				termbox.Flush()
-			*/
+
+			flushImageToScreen(frame, termWidth, termHeight, density)
+
 			release()
+			// os.Exit(0)
+
 			// poll for keyboard events in another goroutine
 			events := make(chan termbox.Event, 10)
 			go func() {
@@ -143,65 +136,42 @@ func main() {
 			default:
 
 			}
-
-			/*
-				go func() {
-					switch ev := termbox.PollEvent(); ev.Type {
-					case termbox.EventKey:
-						switch ev.Key {
-						case termbox.KeyEsc:
-							os.Exit(0)
-						}
-					}
-				}()
-			*/
 		}
-
-		// Since frame is the standard image.Image, it's compatible with Go standard
-		// library. For example, capturing the first frame and store it as a jpeg image.
-		// output, _ := os.Create("frame.jpg")
-		// jpeg.Encode(output, frame, nil)
 	}
 }
 
-func getPixels(srcImage image.Image, termWidth, termHeight int) []Pixel {
-
+func imageToAscii(srcImage image.Image, termWidth, termHeight int, density string) string {
+	var buffer bytes.Buffer
+	slope := float32((len(density) - 1)) / 255.0
 	// Set the image size to the terminal size
 	resizedImage := image.NewRGBA(image.Rect(0, 0, termWidth, termHeight))
 
 	// Resize
 	draw.NearestNeighbor.Scale(resizedImage, resizedImage.Rect, srcImage, srcImage.Bounds(), draw.Over, nil)
 
-	bounds := resizedImage.Bounds()
-	width, height := bounds.Max.X, bounds.Max.Y
-
-	pixels := make([]Pixel, 0, width*height)
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			pixels = append(pixels, rgbaToPixel(resizedImage.At(x, y).RGBA()))
+	for y := 0; y < termHeight; y++ {
+		for x := 0; x < termWidth; x++ {
+			// get rgba values
+			pixel := rgbaToPixel(resizedImage.At(x, y).RGBA())
+			avg := (pixel.R + pixel.G + pixel.B) / 3 // 0-255
+			buffer.WriteString(string(density[int32(float32(avg)*slope)]))
 		}
 	}
+	return buffer.String()
+}
 
-	return pixels
+func flushImageToScreen(frame image.Image, termWidth, termHeight int, density string) {
+	asciiPixels := imageToAscii(frame, termWidth, termHeight, density)
+
+	for y := 0; y < termHeight; y++ {
+		for x := 0; x < termWidth; x++ {
+			termbox.SetChar(x, y, rune(asciiPixels[y*termWidth+x]))
+		}
+	}
+	termbox.Flush()
 }
 
 // img.At(x, y).RGBA() returns four uint32 values; we want a Pixel
 func rgbaToPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
 	return Pixel{int(r / 257), int(g / 257), int(b / 257), int(a / 257)}
-}
-
-func pixelsToAscii(width int, height int, pixels []Pixel, density string) string {
-	var buffer bytes.Buffer
-	slope := float32((len(density) - 1)) / 255.0
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			index := y*width + x
-			avg := (pixels[index].R + pixels[index].G + pixels[index].B) / 3 // 0-255
-			// fmt.Println(slope)
-			buffer.WriteString(string(density[int32(float32(avg)*slope)]))
-		}
-		buffer.WriteString("\n")
-	}
-	return buffer.String()
 }
