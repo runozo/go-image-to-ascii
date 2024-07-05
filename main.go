@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/gdamore/tcell"
 	"github.com/nsf/termbox-go"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/webp"
@@ -52,12 +53,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := termbox.Init(); err != nil {
-		fmt.Println("Error: termbox failed to initialize")
+	screen, err := tcell.NewScreen()
+	if err != nil {
+		fmt.Println("Error: tcell failed to initialize")
 		os.Exit(1)
 	}
+	screen.SetStyle(tcell.StyleDefault)
+	defer screen.Fini()
 
-	termWidth, termHeight := termbox.Size()
+	termWidth, termHeight := screen.Size()
 	// termWidth, termHeight := 100, 50
 	// defer termbox.Close()
 	fmt.Println("width:", termWidth, "height:", termHeight)
@@ -79,7 +83,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		flushImageToScreen(srcImage, termWidth, termHeight, density)
+		flushImageToScreen(screen, srcImage, termWidth, termHeight, density)
 
 	}
 
@@ -102,7 +106,6 @@ func main() {
 		// to return the buffer to hold frame back to the source so that the buffer
 		// can be reused for the next frames.
 		videoReader := videoTrack.NewReader(false)
-		termbox.Clear(coldef, coldef)
 		// mainloop:
 		for {
 			frame, release, err := videoReader.Read()
@@ -110,32 +113,34 @@ func main() {
 				fmt.Println("Error: Video could not be read")
 				os.Exit(1)
 			}
-			termWidth, termHeight = termbox.Size()
+			termWidth, termHeight = screen.Size()
 
-			flushImageToScreen(frame, termWidth, termHeight, density)
+			flushImageToScreen(screen, frame, termWidth, termHeight, density)
 
 			release()
 			// os.Exit(0)
 
 			// poll for keyboard events in another goroutine
-			events := make(chan termbox.Event, 10)
+			events := make(chan tcell.Event, 10)
 			go func() {
 				for {
-					events <- termbox.PollEvent()
+					events <- screen.PollEvent()
 				}
 			}()
-			select {
-			case ev := <-events:
-				if ev.Type == termbox.EventKey {
-					if ev.Key == termbox.KeyEsc {
-						fmt.Println("bye")
-						os.Exit(0)
+			/*
+				select {
+				case ev := <-events:
+					if ev.Type == termbox.EventKey {
+						if ev.Key == termbox.KeyEsc {
+							fmt.Println("bye")
+							os.Exit(0)
+						}
 					}
+
+				default:
+
 				}
-
-			default:
-
-			}
+			*/
 		}
 	}
 }
@@ -147,7 +152,7 @@ func imageToAscii(srcImage image.Image, termWidth, termHeight int, density strin
 	resizedImage := image.NewRGBA(image.Rect(0, 0, termWidth, termHeight))
 
 	// Resize
-	draw.NearestNeighbor.Scale(resizedImage, resizedImage.Rect, srcImage, srcImage.Bounds(), draw.Over, nil)
+	draw.NearestNeighbor.Scale(resizedImage, resizedImage.Bounds(), srcImage, srcImage.Bounds(), draw.Over, nil)
 
 	for y := 0; y < termHeight; y++ {
 		for x := 0; x < termWidth; x++ {
@@ -160,15 +165,15 @@ func imageToAscii(srcImage image.Image, termWidth, termHeight int, density strin
 	return buffer.String()
 }
 
-func flushImageToScreen(frame image.Image, termWidth, termHeight int, density string) {
+func flushImageToScreen(screen tcell.Screen, frame image.Image, termWidth, termHeight int, density string) {
 	asciiPixels := imageToAscii(frame, termWidth, termHeight, density)
 
 	for y := 0; y < termHeight; y++ {
 		for x := 0; x < termWidth; x++ {
-			termbox.SetChar(x, y, rune(asciiPixels[y*termWidth+x]))
+			screen.SetCell(x, y, tcell.StyleDefault, rune(asciiPixels[y*termWidth+x]))
 		}
 	}
-	termbox.Flush()
+	screen.Show()
 }
 
 // img.At(x, y).RGBA() returns four uint32 values; we want a Pixel
