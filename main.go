@@ -10,7 +10,6 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell"
-	"github.com/nsf/termbox-go"
 	"golang.org/x/image/draw"
 	"golang.org/x/image/webp"
 
@@ -28,7 +27,6 @@ import (
 
 // const density = "Ñ@#W$9876543210?!abc;:+=-,._          "
 const density = "         _.,-=+:;cba!?0123456789$W#@Ñ"
-const coldef = termbox.ColorDefault
 
 type Pixel struct {
 	R int
@@ -55,15 +53,20 @@ func main() {
 
 	screen, err := tcell.NewScreen()
 	if err != nil {
-		fmt.Println("Error: tcell failed to initialize")
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
+
+	if err := screen.Init(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+
 	screen.SetStyle(tcell.StyleDefault)
-	defer screen.Fini()
+	// screen.Clear()
+	// defer screen.Fini()
 
 	termWidth, termHeight := screen.Size()
-	// termWidth, termHeight := 100, 50
-	// defer termbox.Close()
 	fmt.Println("width:", termWidth, "height:", termHeight)
 
 	if *filename != "" {
@@ -84,7 +87,6 @@ func main() {
 		}
 
 		flushImageToScreen(screen, srcImage, termWidth, termHeight, density)
-
 	}
 
 	if *webcam {
@@ -166,6 +168,7 @@ func imageToAscii(srcImage image.Image, termWidth, termHeight int, density strin
 }
 
 func flushImageToScreen(screen tcell.Screen, frame image.Image, termWidth, termHeight int, density string) {
+	screen.Fill(' ', tcell.StyleDefault)
 	asciiPixels := imageToAscii(frame, termWidth, termHeight, density)
 
 	for y := 0; y < termHeight; y++ {

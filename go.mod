@@ -1,10 +1,9 @@
 module github.com/runozo/go-image-to-ascii
 
-go 1.22.2
+go 1.22.0
 
 require (
 	github.com/gdamore/tcell v1.4.0
-	github.com/nsf/termbox-go v1.1.1
 	github.com/pion/mediadevices v0.6.4
 	golang.org/x/image v0.18.0
 )
@@ -15,7 +14,7 @@ require (
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/mattn/go-runewidth v0.0.7 // indirect
 	github.com/pion/datachannel v1.5.5 // indirect
 	github.com/pion/dtls/v2 v2.2.7 // indirect
 	github.com/pion/ice/v2 v2.3.13 // indirect
