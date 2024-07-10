@@ -31,3 +31,8 @@ Press ```CTRL+C``` or ```ESC``` to exit.
 ### Static image
 
 ```./go-image-to-ascii -file image.webp```
+
+## TODO
+
+[ ] Add key bindings to change character density
+
