@@ -110,12 +110,13 @@ func main() {
 		videoReader := videoTrack.NewReader(false)
 		// mainloop:
 		for {
+			termWidth, termHeight = screen.Size()
+			// read a frame from the webcam
 			frame, release, err := videoReader.Read()
 			if err != nil {
 				fmt.Println("Error: Video could not be read")
 				os.Exit(1)
 			}
-			termWidth, termHeight = screen.Size()
 
 			flushImageToScreen(screen, frame, termWidth, termHeight, density)
 

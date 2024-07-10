@@ -2,32 +2,29 @@
 
 Convert a bitmap image into ASCII.
 
+## Features
+
+- works with webcam in realtime
+- reads png, jpeg and webp images
+
 ![source image](examples/image.webp)
 
 ![resulting image](examples/image_ascii.png)
 
 ## Build
 
-```go build -o go-image-to-ascii main.go```
-
-## Build for other platforms
-
 ```make windows```
 
 ```make linux```
 
-```make darwin```
-
 ## Usage
 
-The source image will be stretched to fit the actual size in characters of the terminal. 
+The source image will be stretched to fit the actual size in characters of the active terminal.
 
-```./go-image-to-ascii image.webp```
+### Webcam
 
-## Todo
+```./bin/go-image-to-ascii-linux -webcam```
 
-[] fetch image from webcam
-[] live video rendering on terminal
+### Static image
 
-
-
+```./bin/go-image-to-ascii-linux -file image.webp```
