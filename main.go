@@ -66,6 +66,7 @@ func main() {
 	// defer screen.Fini()
 
 	termWidth, termHeight := screen.Size()
+	screen.Fini()
 	fmt.Println("width:", termWidth, "height:", termHeight)
 
 	if *filename != "" {
@@ -83,7 +84,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		flushImageToScreen(screen, srcImage, termWidth, termHeight, density)
+		fmt.Println(imageToAscii(srcImage, termWidth, termHeight, density))
 	}
 
 	if *webcam {
@@ -120,26 +121,17 @@ func main() {
 			release()
 
 			// poll for keyboard events in another goroutine
-			events := make(chan tcell.Event, 10)
 			go func() {
 				for {
-					events <- screen.PollEvent()
-				}
-			}()
-			/*
-				select {
-				case ev := <-events:
-					if ev.Type == termbox.EventKey {
-						if ev.Key == termbox.KeyEsc {
-							fmt.Println("bye")
+					switch event := screen.PollEvent().(type) {
+					case *tcell.EventKey:
+						if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC {
+							screen.Fini()
 							os.Exit(0)
 						}
 					}
-
-				default:
-
 				}
-			*/
+			}()
 		}
 	}
 }

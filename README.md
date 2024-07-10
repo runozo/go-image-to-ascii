@@ -19,11 +19,13 @@ Convert a bitmap image into ASCII.
 
 ## Usage
 
-The source image will be stretched to fit the actual size in characters of the active terminal.
+The source image or webcam frames, will be stretched to fit the actual size in characters, of the active terminal.
 
 ### Webcam
 
 ```./bin/go-image-to-ascii-linux -webcam```
+
+Press ```CTRL+C``` or ```ESC``` to exit.
 
 ### Static image
 
