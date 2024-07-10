@@ -63,7 +63,6 @@ func main() {
 	}
 
 	screen.SetStyle(tcell.StyleDefault)
-	// screen.Clear()
 	// defer screen.Fini()
 
 	termWidth, termHeight := screen.Size()
@@ -71,12 +70,10 @@ func main() {
 
 	if *filename != "" {
 		file, err := os.Open(*filename)
-
 		if err != nil {
 			fmt.Println("Error: File could not be opened")
 			os.Exit(1)
 		}
-
 		defer file.Close()
 
 		srcImage, _, err := image.Decode(file)
@@ -121,7 +118,6 @@ func main() {
 			flushImageToScreen(screen, frame, termWidth, termHeight, density)
 
 			release()
-			// os.Exit(0)
 
 			// poll for keyboard events in another goroutine
 			events := make(chan tcell.Event, 10)
@@ -148,6 +144,15 @@ func main() {
 	}
 }
 
+// imageToAscii converts the source image into ASCII art based on the given terminal width, terminal height, and density values.
+//
+// Parameters:
+//   - srcImage: the source image to convert
+//   - termWidth: the width of the terminal
+//   - termHeight: the height of the terminal
+//   - density: the density string used to map pixel values to ASCII characters
+//
+// Return type: string
 func imageToAscii(srcImage image.Image, termWidth, termHeight int, density string) string {
 	var buffer bytes.Buffer
 	slope := float32((len(density) - 1)) / 255.0
@@ -168,6 +173,14 @@ func imageToAscii(srcImage image.Image, termWidth, termHeight int, density strin
 	return buffer.String()
 }
 
+// flushImageToScreen flushes the given image to the screen.
+//
+// Parameters:
+// - screen: the tcell screen to draw on.
+// - frame: the image to draw.
+// - termWidth: the width of the terminal.
+// - termHeight: the height of the terminal.
+// - density: the density string used to map pixel values to ASCII characters.
 func flushImageToScreen(screen tcell.Screen, frame image.Image, termWidth, termHeight int, density string) {
 	screen.Fill(' ', tcell.StyleDefault)
 	asciiPixels := imageToAscii(frame, termWidth, termHeight, density)
@@ -180,7 +193,14 @@ func flushImageToScreen(screen tcell.Screen, frame image.Image, termWidth, termH
 	screen.Show()
 }
 
-// img.At(x, y).RGBA() returns four uint32 values; we want a Pixel
+// rgbaToPixel converts RGBA values to a Pixel struct.
+//
+// Parameters:
+// - r: the red component of the RGBA value.
+// - g: the green component of the RGBA value.
+// - b: the blue component of the RGBA value.
+// - a: the alpha component of the RGBA value.
+// Return type: Pixel
 func rgbaToPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
 	return Pixel{int(r / 257), int(g / 257), int(b / 257), int(a / 257)}
 }
