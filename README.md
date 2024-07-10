@@ -11,6 +11,10 @@ Convert a bitmap image into ASCII.
 
 ![resulting image](examples/image_ascii.png)
 
+## Installation
+### Get the binary
+You can obtain the binary executable for your operating system from the [releases page](https://github.com/runozo/go-image-to-ascii/releases)
+
 ## Build
 
 ```make windows```
@@ -23,10 +27,10 @@ The source image or webcam frames, will be stretched to fit the actual size in c
 
 ### Webcam
 
-```./bin/go-image-to-ascii-linux -webcam```
+```./go-image-to-ascii -webcam```
 
 Press ```CTRL+C``` or ```ESC``` to exit.
 
 ### Static image
 
-```./bin/go-image-to-ascii-linux -file image.webp```
+```./go-image-to-ascii -file image.webp```
